@@ -44,6 +44,8 @@ pnpm run preview
 - [ESLint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
 - [TailwindCSS](https://tailwindcss.com/) and [Tailwindcss Typography](https://github.com/tailwindlabs/tailwindcss-typography)
+- [vite-plugin-kit-routes](https://github.com/jycouet/kitql?tab=readme-ov-file#-infos)
+  This plugin is used to generate the routes for the application. It will give you suggestions for the routes and the parameters that you can use in the route.
 
 ## Deployment
 
