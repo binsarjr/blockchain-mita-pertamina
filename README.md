@@ -1,6 +1,6 @@
 # Sveltekit Boilerplate
 
-This is a boilerplate for a SvelteKit project. It includes:
+This is a boilerplate for a SvelteKit project.
 
 ## Installation
 
@@ -38,14 +38,13 @@ pnpm run build
 pnpm run preview
 ```
 
-## Included
+## Libraries, Plugins or Tools Included
 
 - [Typescript](https://www.typescriptlang.org/)
 - [ESLint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
 - [TailwindCSS](https://tailwindcss.com/) and [Tailwindcss Typography](https://github.com/tailwindlabs/tailwindcss-typography)
-- [vite-plugin-kit-routes](https://github.com/jycouet/kitql?tab=readme-ov-file#-infos)
-  This plugin is used to generate the routes for the application. It will give you suggestions for the routes and the parameters that you can use in the route.
+- [vite-plugin-kit-routes](https://github.com/jycouet/kitql?tab=readme-ov-file#-infos) This plugin is used to generate the routes for the application. It will give you suggestions for the routes and the parameters that you can use in the route.
 
 ## Deployment
 
