@@ -43,6 +43,7 @@ pnpm run preview
 - [Typescript](https://www.typescriptlang.org/)
 - [ESLint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
+- [TailwindCSS](https://tailwindcss.com/) and [Tailwindcss Typography](https://github.com/tailwindlabs/tailwindcss-typography)
 
 ## Deployment
 
