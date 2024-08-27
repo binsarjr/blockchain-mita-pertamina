@@ -1,0 +1,27 @@
+[Unit]
+Description=Your App Service
+After=network.target
+
+[Service]
+WorkingDirectory=/app
+# Must be absolute path to .env file
+EnvironmentFile=/app/.env
+
+
+# Ensure the socket path is cleared before starting the service
+ExecStartPre=/bin/bash -c 'if [ -f "$SOCKET_PATH" ]; then rm -f $SOCKET_PATH; fi'
+
+ExecStart=node build/index.js
+Restart=always
+
+User=root
+Group=root
+
+StandardOutput=file:/var/log/app.out.log
+StandardError=file:/var/log/app.err.log
+
+# Ensure correct permissions on the socket path
+ExecStartPost=/bin/bash -c 'while [ ! -S $SOCKET_PATH ]; do sleep 1; done; chown www-data:www-data $SOCKET_PATH'
+[Install]
+
+WantedBy=multi-user.target
