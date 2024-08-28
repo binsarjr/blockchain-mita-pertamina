@@ -31,7 +31,9 @@ jobs:
           chmod 600 ~/.ssh/id_ecdsa
           eval $(ssh-agent -s)
           ssh-add ~/.ssh/id_ecdsa
-          ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+          # Untuk Mendapatkan SSH_KNOWN_HOSTS, silahkan menggunakan perintah ini
+          # ssh-keyscan -H Your-Server-IP-or-Domain.com >> ~/.ssh/known_hosts
+          echo ${{ secrets.SSH_KNOWN_HOSTS }} >> ~/.ssh/known_hosts
 
       - name: Checkout code
         uses: actions/checkout@v4
