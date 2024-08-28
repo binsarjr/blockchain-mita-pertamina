@@ -16,13 +16,13 @@ jq '.version = "'$NEW_VERSION'"' package.json >tmp.$$.json && mv tmp.$$.json pac
 echo "Version bumped from $OLD_VERSION -> $NEW_VERSION"
 echo "Run the following commands to commit and push the changes?"
 echo "  $ git add package.json"
-echo "  $ git commit -m" "bump version from $OLD_VERSION -> $NEW_VERSION"
+echo "  $ git commit -m" "chore: bump version from $OLD_VERSION -> $NEW_VERSION"
 echo -n "[Y/n] "
 
 read -r -p "" response
 if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
   git add package.json
-  git commit -m "Bump version $OLD_VERSION -> $NEW_VERSION"
+  git commit -m "chore: Bump version $OLD_VERSION -> $NEW_VERSION"
 else
   echo "Aborting..."
   exit 1
