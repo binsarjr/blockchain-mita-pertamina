@@ -1,0 +1,105 @@
+name: Build and Deploy to Production
+on:
+  push:
+    branches:
+      - main
+
+env:
+  SSH_HOST: your-server-ip-or-domain.com
+  SSH_USERNAME: root
+  SSH_PORT: 22
+  APP_DIR: /app
+  REPO: your-username/your-repo # example: binsarjr/sveltekit-boilerplate
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tailscale
+        id: tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:githubdeploy
+
+      - name: Add SSH key
+        id: ssh
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ecdsa
+          chmod 600 ~/.ssh/id_ecdsa
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_ecdsa
+          ssh-keyscan -H ${{ env.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
+
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            pnpm-store-
+
+      - name: Install Dependencies
+        if: steps.cache-pnpm-store.outputs.cache-hit != 'true'
+        run: |
+          pnpm install --frozen-lockfile
+
+      - name: Build app
+        run: pnpm run build
+
+      - name: Install Dependencies For Production Only
+        run: pnpm install --prod --frozen-lockfile
+
+      - name: Copy build files to Deployment Server
+        run: rsync -avzrhcP --delete-after -e "ssh -p ${{ env.SSH_PORT }}" ./build ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:${{ env.APP_DIR }}/
+
+      - name: Copy migrations files to remote server
+        run: rsync -avzrhcP --delete-after -e "ssh -p ${{ env.SSH_PORT }}" ./prisma ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:${{ env.APP_DIR }}/
+
+      - name: Sync node_modules
+        run: rsync -avzrhcP --delete-after -e "ssh -p ${{ env.SSH_PORT }}" ./node_modules ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:${{ env.APP_DIR }}/
+
+      - name: Copy config files to remote server
+        run: |
+          rsync -avzrhcP --delete-after -e "ssh -p ${{ env.SSH_PORT }}" \
+            ./package.json \
+            ./pnpm-lock.yaml \
+            ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }}:${{ env.APP_DIR }}/
+
+      - name: Restart app
+        run: |
+          ssh ${{ env.SSH_USERNAME }}@${{ env.SSH_HOST }} "cd ${{ env.APP_DIR }};pnpm run prisma:gen;systemctl restart your-app.service"
+
+  send-notification:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Git checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+
+      - name: Get Commit Message for Twist Notification
+        run: |
+          echo -n '{"content":"# Production updated \nCommit: ' >/tmp/twist_data.json
+          git log --pretty=format:"[%h](https://github.com/${{ env.REPO }}/commit/%h) - %s" -1 >>/tmp/twist_data.json
+          echo '"}' >>/tmp/twist_data.json
+
+      - name: Install curl
+        run: sudo apt-get install -y curl
+      - name: Notify Twist
+        run: |
+          curl -vv -X POST -H "Content-type: application/json" -d @/tmp/twist_data.json 'https://twist.com/api/v3/integration_incoming/post_data?install_id=${{ secrets.TWIST_INSTALL_ID }}&install_token=${{ secrets.TWIST_INSTALL_TOKEN }}'
