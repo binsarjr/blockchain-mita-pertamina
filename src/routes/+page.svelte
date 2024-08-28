@@ -1,6 +1,7 @@
 <script>
 	import FormInput from '@/components/forms/FormInput.svelte';
 	import FormProvider from '@/components/forms/FormProvider.svelte';
+	import FormUpload from '@/components/forms/FormUpload.svelte';
 	import { Input } from '@/components/ui/input';
 	import { z } from 'zod';
 	const schema = z.object({
@@ -11,5 +12,6 @@
 hello WOrld
 <FormProvider {schema}>
 	<FormInput name="name" after="Enter your name" />
+	<FormUpload name="picture" after="Enter your name" />
 	<button>okei</button>
 </FormProvider>
