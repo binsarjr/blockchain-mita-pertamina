@@ -4,6 +4,7 @@
 	import { getNestedValue, getNestedWritable } from '@/utils';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 	import { getForm } from './FormProvider.svelte';
+	import { createId } from '@paralleldrive/cuid2';
 
 	type $$Props = HTMLInputAttributes &
 		Partial<{
@@ -30,13 +31,14 @@
 
 	$: isError = fieldError?.length;
 	$: messages = (isError ? fieldError : []) as string[];
+	const id = createId();
 </script>
 
 <div class="flex w-full max-w-sm flex-col gap-1.5">
 	{#if $$props.label}
-		<Label for={$$props.label}>{$$props.label}</Label>
+		<Label for={id}>{$$props.label}</Label>
 	{/if}
-	<Input {...$$restProps} bind:value={$value} {...constraint} aria-invalid={isError} />
+	<Input {id} {...$$restProps} bind:value={$value} {...constraint} aria-invalid={isError} />
 	{#if $$props.after}
 		<p class="text-sm text-muted-foreground">{$$props.after}</p>
 	{/if}
