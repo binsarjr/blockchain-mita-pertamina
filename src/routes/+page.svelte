@@ -1,5 +1,5 @@
 <script>
-	import FormInput from '@/components/molecules/form/FormInput.svelte';
+	import FormTextInput from '@/components/molecules/form/FormTextInput.svelte';
 	import FormProvider from '@/components/molecules/form/FormProvider.svelte';
 	import FormSelect from '@/components/molecules/form/FormSelect.svelte';
 	import FormUpload from '@/components/molecules/form/FormUpload.svelte';
@@ -18,8 +18,8 @@
 
 <div class="container">
 	<FormProvider {form} debug>
-		<FormInput name="name" label="Name" placeholder="Enter your name" />
-		<FormInput name="angka" label="Angka" type="number" placeholder="Enter your angka" />
+		<FormTextInput name="name" label="Name" placeholder="Enter your name" />
+		<FormTextInput name="angka" label="Angka" type="number" placeholder="Enter your angka" />
 		<FormUpload multiple name="img" label="Angka" placeholder="Enter your angka" />
 		<FormSelect
 			name="email"
