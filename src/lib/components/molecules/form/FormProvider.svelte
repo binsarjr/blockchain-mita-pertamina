@@ -11,8 +11,8 @@
 <script lang="ts">
 	import { getContext, setContext } from 'svelte';
 	import type { HTMLFormAttributes } from 'svelte/elements';
-	import SuperDebug from 'sveltekit-superforms';
 	import type { SuperForm } from 'sveltekit-superforms';
+	import SuperDebug from 'sveltekit-superforms';
 
 	type PropsPartial = Partial<{
 		debug: boolean;
@@ -29,6 +29,8 @@
 	setFormProvider(form);
 
 	const { form: formData, enhance } = form;
+
+	$$restProps.method ||= 'POST';
 </script>
 
 {#if debug}
