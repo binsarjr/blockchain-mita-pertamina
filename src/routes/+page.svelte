@@ -16,22 +16,27 @@
 	const form = superForm({});
 </script>
 
-<FormProvider {form} debug>
-	<FormInput name="name" label="Name" placeholder="Enter your name" />
-	<FormInput name="angka" label="Angka" type="number" placeholder="Enter your angka" />
-	<FormUpload multiple name="img" label="Angka" placeholder="Enter your angka" />
-	<FormSelect
-		name="email"
-		label="Email"
-		placeholder="Enter your email"
-		after="You can manage email address in your email settings."
-		multiple
-		options={[
-			{ value: 'm@example.com', label: 'm@example.com' },
-			{ value: 'm@google.com', label: 'm@google.com' },
-			{ value: 'm@support.com', label: 'm@support.com' }
-		]}
-	/>
-	<!-- <FormUpload name="picture" after="Enter your name" /> -->
-	<button>okei</button>
-</FormProvider>
+<div class="container">
+	<FormProvider {form} debug>
+		<FormInput name="name" label="Name" placeholder="Enter your name" />
+		<FormInput name="angka" label="Angka" type="number" placeholder="Enter your angka" />
+		<FormUpload multiple name="img" label="Angka" placeholder="Enter your angka" />
+		<FormSelect
+			name="email"
+			label="Email"
+			placeholder="Enter your email"
+			after="You can manage email address in your email settings."
+			multiple
+			options={async () => {
+				await new Promise((r) => setTimeout(r, 1000));
+				return [
+					{ value: 'm@example.com', label: 'm@example.com' },
+					{ value: 'm@google.com', label: 'm@google.com' },
+					{ value: 'm@support.com', label: 'm@support.com' }
+				];
+			}}
+		/>
+		<!-- <FormUpload name="picture" after="Enter your name" /> -->
+		<button>okei</button>
+	</FormProvider>
+</div>

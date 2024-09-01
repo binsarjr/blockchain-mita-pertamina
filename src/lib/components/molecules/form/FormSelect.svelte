@@ -7,14 +7,15 @@
 	import * as Select from '$lib/components/ui/select';
 	const formProvider = getFormProvider();
 
+	type Option =
+		| string
+		| {
+				value: string;
+				label: string;
+		  };
+
 	type $$Props = FormBaseProps & {
-		options?: (
-			| string
-			| {
-					value: string;
-					label: string;
-			  }
-		)[];
+		options?: Option[] | (() => Promise<Option[]> | Option[]);
 		selected?: {
 			value: string;
 			label: string;
@@ -78,13 +79,27 @@
 			<Select.Value placeholder={$$props.placeholder} />
 		</Select.Trigger>
 		<Select.Content>
-			{#each options || [] as option}
-				{#if typeof option === 'string'}
-					<Select.Item value={option} label={option} />
-				{:else}
-					<Select.Item value={option.value} label={option.label} />
-				{/if}
-			{/each}
+			{#if typeof options === 'function'}
+				{#await options()}
+					<Select.Item value="Wait...." disabled />
+				{:then options}
+					{#each options || [] as option}
+						{#if typeof option === 'string'}
+							<Select.Item value={option} label={option} />
+						{:else}
+							<Select.Item value={option.value} label={option.label} />
+						{/if}
+					{/each}
+				{/await}
+			{:else}
+				{#each options || [] as option}
+					{#if typeof option === 'string'}
+						<Select.Item value={option} label={option} />
+					{:else}
+						<Select.Item value={option.value} label={option.label} />
+					{/if}
+				{/each}
+			{/if}
 		</Select.Content>
 	</Select.Root>
 </FormBase>
