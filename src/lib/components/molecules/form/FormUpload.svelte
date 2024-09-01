@@ -8,11 +8,12 @@
 	const formProvider = getFormProvider();
 
 	type $$Props = FormBaseProps;
+	export let multiple: $$Props['multiple'] = false;
 	const { errors, constraints } = formFieldProxy(formProvider, $$props.name);
 
-	const files = $$props.multiple
-		? fileProxy(formProvider, $$props.name)
-		: filesProxy(formProvider, $$props.name);
+	const value_s = multiple
+		? filesProxy(formProvider, $$props.name)
+		: fileProxy(formProvider, $$props.name);
 
 	$$props.id = 'form-upload-' + createId();
 	$$restProps = {
@@ -25,9 +26,9 @@
 	<Input
 		id={$$props.id}
 		aria-invalid={!!$errors?.length}
-		bind:files={$files}
 		{...$constraints}
 		{...$$props}
+		bind:files={$value_s}
 		type="file"
 	/>
 </FormBase>
