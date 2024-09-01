@@ -13,22 +13,13 @@
 		img: z.instanceof(File)
 	});
 
-	const form = superForm(defaults(zod(schema)), {
-		validators: zod(schema)
-	});
-
-	const { form: formData } = form;
-
-	$formData.name = 'ok';
-	onMount(() => {
-		$formData.name = 'test';
-	});
+	const form = superForm({});
 </script>
 
 <FormProvider {form} debug>
 	<FormInput name="name" label="Name" placeholder="Enter your name" />
 	<FormInput name="angka" label="Angka" type="number" placeholder="Enter your angka" />
-	<FormUpload name="img" label="Angka" placeholder="Enter your angka" />
+	<FormUpload multiple name="img" label="Angka" placeholder="Enter your angka" />
 	<FormSelect
 		name="email"
 		label="Email"

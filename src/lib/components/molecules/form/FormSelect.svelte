@@ -26,6 +26,17 @@
 	export let multiple: $$Props['multiple'] = false;
 	let { value, errors, constraints } = formFieldProxy(formProvider, $$props.name);
 
+	{
+		// default value
+		if ($value === undefined) {
+			if (multiple) {
+				$value = [];
+			} else {
+				$value = undefined;
+			}
+		}
+	}
+
 	$$props.id = 'form-select-' + createId();
 	$$props = {
 		...$$props,
