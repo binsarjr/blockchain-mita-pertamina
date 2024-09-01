@@ -1,6 +1,7 @@
 <script>
 	import FormInput from '@/components/molecules/form/FormInput.svelte';
 	import FormProvider from '@/components/molecules/form/FormProvider.svelte';
+	import FormSelect from '@/components/molecules/form/FormSelect.svelte';
 	import FormUpload from '@/components/molecules/form/FormUpload.svelte';
 	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
@@ -28,6 +29,17 @@
 	<FormInput name="name" label="Name" placeholder="Enter your name" />
 	<FormInput name="angka" label="Angka" type="number" placeholder="Enter your angka" />
 	<FormUpload name="img" label="Angka" placeholder="Enter your angka" />
+	<FormSelect
+		name="email"
+		label="Email"
+		placeholder="Enter your email"
+		after="You can manage email address in your email settings."
+		options={[
+			{ value: 'm@example.com', label: 'm@example.com' },
+			{ value: 'm@google.com', label: 'm@google.com' },
+			{ value: 'm@support.com', label: 'm@support.com' }
+		]}
+	/>
 	<!-- <FormUpload name="picture" after="Enter your name" /> -->
 	<button>okei</button>
 </FormProvider>
