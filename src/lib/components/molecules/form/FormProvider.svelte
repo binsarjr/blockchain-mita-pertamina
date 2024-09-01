@@ -16,6 +16,7 @@
 
 	type PropsPartial = Partial<{
 		debug: boolean;
+		swal: boolean;
 	}>;
 
 	type PropsRequired = Required<{
