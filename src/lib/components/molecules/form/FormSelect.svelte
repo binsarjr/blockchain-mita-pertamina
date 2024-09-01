@@ -23,6 +23,7 @@
 	};
 	export let options: $$Props['options'] = undefined;
 	export let selected: $$Props['selected'] = undefined;
+	export let multiple: $$Props['multiple'] = false;
 	let { value, errors, constraints } = formFieldProxy(formProvider, $$props.name);
 
 	$$props.id = 'form-select-' + createId();
@@ -31,16 +32,37 @@
 		...$constraints
 	};
 
-	$: selected = $value
-		? {
-				value: $value,
-				label: $value
-			}
-		: undefined;
+	$: selected = multiple
+		? ($value || []).map((c: any) => ({
+				label: c,
+				value: c
+			}))
+		: $value
+			? {
+					value: $value,
+					label: $value
+				}
+			: undefined;
 </script>
 
 <FormBase {...$$props} errors={$errors}>
-	<Select.Root bind:selected onSelectedChange={(e) => e && ($value = e.value)}>
+	<Select.Root
+		{selected}
+		{multiple}
+		onSelectedChange={(e) => {
+			if (multiple) {
+				if (e) {
+					// @ts-ignore
+					$value = e.map((item) => item.value);
+				} else {
+					$value = [];
+				}
+			} else {
+				// @ts-ignore
+				e && ($value = e.value);
+			}
+		}}
+	>
 		<Select.Trigger {...$constraints} id={$$props.id}>
 			<Select.Value placeholder={$$props.placeholder} />
 		</Select.Trigger>

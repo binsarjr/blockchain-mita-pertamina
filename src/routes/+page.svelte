@@ -34,6 +34,7 @@
 		label="Email"
 		placeholder="Enter your email"
 		after="You can manage email address in your email settings."
+		multiple
 		options={[
 			{ value: 'm@example.com', label: 'm@example.com' },
 			{ value: 'm@google.com', label: 'm@google.com' },
