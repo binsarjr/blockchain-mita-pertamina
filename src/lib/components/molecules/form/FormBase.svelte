@@ -2,7 +2,7 @@
 	type SuperFormProps = Partial<{
 		errors: string[];
 	}>;
-	export type FormBaseProps = HTMLInputAttributes &
+	export type FormBaseProps = Omit<Omit<HTMLInputAttributes, 'value'>, 'files'> &
 		Partial<{
 			label: string;
 			after: string;

@@ -9,6 +9,7 @@
 
 	type $$Props = FormBaseProps;
 	let { value, errors, constraints } = formFieldProxy(formProvider, $$props.name);
+
 	if ($$props.type == 'file') {
 		throw new Error('Please use FormUpload component instead for file input');
 	}

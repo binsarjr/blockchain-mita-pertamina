@@ -2,6 +2,7 @@
 	import FormInput from '@/components/molecules/form/FormInput.svelte';
 	import FormProvider from '@/components/molecules/form/FormProvider.svelte';
 	import FormUpload from '@/components/molecules/form/FormUpload.svelte';
+	import { onMount } from 'svelte';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { z } from 'zod';
@@ -13,6 +14,13 @@
 
 	const form = superForm(defaults(zod(schema)), {
 		validators: zod(schema)
+	});
+
+	const { form: formData } = form;
+
+	$formData.name = 'ok';
+	onMount(() => {
+		$formData.name = 'test';
 	});
 </script>
 
