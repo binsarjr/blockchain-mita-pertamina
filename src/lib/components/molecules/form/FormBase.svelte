@@ -17,13 +17,15 @@
 	type $$Props = FormBaseProps & SuperFormProps;
 </script>
 
-<div class="flex w-full max-w-sm flex-col gap-1.5">
+<div class="space-y-2">
 	{#if $$props.label}
 		<Label for={$$props.id}>
-			{$$props.label}
-			{#if $$props.required}
-				<span class="text-red-500">*</span>
-			{/if}
+			<p>
+				{$$props.label}
+				{#if $$props.required}
+					<span class="-ml-1 text-red-400">*</span>
+				{/if}
+			</p>
 		</Label>
 	{/if}
 	<slot />
