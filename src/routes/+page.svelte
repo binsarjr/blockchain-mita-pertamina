@@ -4,8 +4,13 @@
 	import { account, connectWallet, web3 } from '@/stores/web3store';
 	import { Toaster, toast } from 'svelte-sonner';
 	import { writable } from 'svelte/store';
+	import { persisted } from 'svelte-persisted-store';
 
 	let arisanContract: any;
+	const contractAddress = persisted(
+		'arisanSmartContractAddress',
+		'0x20c2c096582305183e5711Ca08ABF8F086aa2544'
+	);
 
 	let errorMessage = '';
 	let currentAccount: string | null;
@@ -20,13 +25,14 @@
 
 	const contractDetail = writable<any>({});
 
+	function loadSmartContractAddress() {
+		arisanContract = new $web3.eth.Contract(ArisanAbi as any, $contractAddress);
+		updateContractDetails();
+	}
+
 	$: if ($web3 && currentAccount) {
 		console.log('Web3 is connected');
-
-		const contractAddress = '0x20c2c096582305183e5711Ca08ABF8F086aa2544';
-
-		arisanContract = new $web3.eth.Contract(ArisanAbi as any, contractAddress);
-		updateContractDetails();
+		loadSmartContractAddress();
 	}
 
 	function isNullAddress(address: string) {
@@ -221,7 +227,28 @@
 			<div class="space-y-6 rounded-lg bg-white p-6 shadow-md">
 				<div>
 					<h2 class="mb-2 text-xl font-semibold">Contract Details</h2>
-					<p>
+					<div class="mb-2 flex items-center">
+						<p>
+							Contract Address:{' '}
+						</p>
+						<input
+							type="text"
+							class="ml-4 w-full rounded-md border px-4 py-2"
+							placeholder="Enter new contract address"
+							bind:value={$contractAddress}
+						/>
+					</div>
+					<Button
+						class="rounded-md bg-blue-500 px-4 py-2 font-medium text-white hover:bg-blue-600"
+						id="refreshButton"
+						on:click={() => {
+							loadSmartContractAddress();
+							toast.success('Smart contract address updated');
+						}}
+					>
+						Refresh
+					</Button>
+					<p class="mt-2">
 						Owner:{' '}
 						<span class="font-medium" id="owner"> {$contractDetail.owner} </span>
 					</p>
