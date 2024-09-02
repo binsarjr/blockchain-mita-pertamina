@@ -7,6 +7,7 @@
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { z } from 'zod';
+	import FormRadio from '@/components/molecules/form/FormRadio.svelte';
 	const schema = z.object({
 		name: z.string().min(2),
 		angka: z.number().min(5).optional(),
@@ -36,7 +37,16 @@
 				];
 			}}
 		/>
-		<!-- <FormUpload name="picture" after="Enter your name" /> -->
+		<FormRadio
+			name="radio"
+			options={[
+				'option-one',
+				{
+					label: 'Option Two',
+					value: 'option-two'
+				}
+			]}
+		/>
 		<button>okei</button>
 	</FormProvider>
 </div>
