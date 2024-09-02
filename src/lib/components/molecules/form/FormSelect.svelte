@@ -1,21 +1,14 @@
 <script lang="ts">
-	import Input from '@/components/ui/input/input.svelte';
+	import * as Select from '$lib/components/ui/select';
 	import { createId } from '@paralleldrive/cuid2';
 	import { formFieldProxy } from 'sveltekit-superforms';
 	import FormBase, { type FormBaseProps } from './FormBase.svelte';
 	import { getFormProvider } from './FormProvider.svelte';
-	import * as Select from '$lib/components/ui/select';
+	import type { Options } from './types';
 	const formProvider = getFormProvider();
 
-	type Option =
-		| string
-		| {
-				value: string;
-				label: string;
-		  };
-
 	type $$Props = FormBaseProps & {
-		options?: Option[] | (() => Promise<Option[]> | Option[]);
+		options?: Options;
 		selected?: {
 			value: string;
 			label: string;
