@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { Button } from '@/components/ui/button';
-	import { browser } from '$app/environment';
-	import { account, connectWallet, web3 } from '@/stores/web3store';
 	import ArisanAbi from '@/abi/arisan.abi.json';
-	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { Button } from '@/components/ui/button';
+	import { account, connectWallet, web3 } from '@/stores/web3store';
 	import { Toaster, toast } from 'svelte-sonner';
-	import { TransactionRevertedWithoutReasonError } from 'web3';
+	import { writable } from 'svelte/store';
 
 	let arisanContract: any;
 
@@ -17,12 +14,16 @@
 		currentAccount = value;
 	});
 
+	$: if (currentAccount) {
+		currentAccount = currentAccount.toLowerCase();
+	}
+
 	const contractDetail = writable<any>({});
 
 	$: if ($web3 && currentAccount) {
 		console.log('Web3 is connected');
 
-		const contractAddress = '0xAb08A2846e3fe81A8d2cF4afd303FAdC6F1fC455';
+		const contractAddress = '0x20c2c096582305183e5711Ca08ABF8F086aa2544';
 
 		arisanContract = new $web3.eth.Contract(ArisanAbi as any, contractAddress);
 		updateContractDetails();
@@ -55,7 +56,7 @@
 			// Get winner address
 			const winnerAddress = await arisanContract.methods.winner().call();
 			$contractDetail.winner = !isNullAddress(winnerAddress)
-				? winnerAddress
+				? winnerAddress.toLowerCase()()
 				: 'Arisan has not been won yet';
 
 			loadMember();
@@ -74,10 +75,14 @@
 
 	let memberAddress: string;
 
+	$: if (memberAddress) {
+		memberAddress = memberAddress.toLowerCase();
+	}
+
 	async function estimateGasForRegisterMember() {
 		if (!$web3) return;
 		const gasEstimate = await arisanContract.methods
-			.registerMember(memberAddress.toLowerCase())
+			.registerMember(memberAddress)
 			.estimateGas({ from: currentAccount });
 		console.log('Estimated gas:', gasEstimate);
 		return gasEstimate;
@@ -101,11 +106,12 @@
 				return;
 			}
 			const result = await arisanContract.methods
-				.registerMember(memberAddress.toLowerCase())
+				.registerMember(memberAddress)
 				.send({ from: currentAccount, gas: gasEstimate });
 			console.log('Member registered successfully:', result);
 			console.log('Member registered successfully:', result.transactionHash);
 			toast.success('Member registered successfully');
+			memberAddress = '';
 			loadMember();
 		} catch (error) {
 			console.error('Error registering member:', error);
@@ -113,13 +119,104 @@
 			errorMessage = error.message;
 		}
 	}
+
+	async function withdraw() {
+		if (!$web3) return;
+		try {
+			const gasEstimate = await arisanContract.methods
+				.withdraw()
+				.estimateGas({ from: currentAccount });
+
+			if (!gasEstimate) {
+				toast.error('Failed to estimate gas');
+				return;
+			}
+			const result = await arisanContract.methods
+				.withdraw()
+				.send({ from: currentAccount, gas: gasEstimate });
+			console.log('Withdraw successfully:', result);
+			console.log('Withdraw successfully:', result.transactionHash);
+			toast.success('Withdraw successfully');
+
+			updateContractDetails();
+		} catch (error: any) {
+			console.error('Error withdrawing:', error);
+			if (error?.data?.data?.reason) {
+				toast.error(error?.data?.data?.reason);
+			} else {
+				errorMessage = error.message;
+			}
+		}
+	}
+
+	async function pickWinner() {
+		// Pick a winner
+		if (!$web3) return;
+		try {
+			const gasEstimate = await arisanContract.methods
+				.pickWinner()
+				.estimateGas({ from: currentAccount });
+			if (!gasEstimate) {
+				toast.error('Failed to estimate gas');
+				return;
+			}
+			const result = await arisanContract.methods
+				.pickWinner()
+				.send({ from: currentAccount, gas: gasEstimate });
+			console.log('Pick a winner successfully:', result);
+			console.log('Pick a winner successfully:', result.transactionHash);
+			toast.success('Pick a winner successfully');
+			updateContractDetails();
+		} catch (error: any) {
+			console.error('Error picking a winner:', error);
+			if (error?.data?.data?.reason) {
+				toast.error(error?.data?.data?.reason);
+			} else {
+				errorMessage = error.message;
+			}
+		}
+	}
+
+	let contributionAmount: number = 0;
+
+	async function contribute() {
+		if (!$web3) return;
+		try {
+			const contributionAmountInWei = $web3.utils.toWei(contributionAmount.toString(), 'ether');
+
+			const gasEstimate = await arisanContract.methods
+				.contribute()
+				.estimateGas({ from: currentAccount, value: contributionAmountInWei });
+			if (!gasEstimate) {
+				toast.error('Failed to estimate gas');
+				return;
+			}
+			const result = await arisanContract.methods
+				.contribute()
+				.send({ from: currentAccount, gas: gasEstimate, value: contributionAmountInWei });
+			console.log('Contribute successfully:', result);
+			console.log('Contribute successfully:', result.transactionHash);
+			toast.success('Contribute successfully');
+			contributionAmount = 0;
+			updateContractDetails();
+		} catch (error: any) {
+			console.error('Error contributing:', error);
+			if (error?.data?.data?.reason) {
+				toast.error(error?.data?.data?.reason);
+			} else {
+				errorMessage = error.message;
+			}
+		}
+	}
 </script>
 
-<Toaster richColors />
+<Toaster expand richColors />
 
 <div class="bg-gray-100 px-6 py-12 sm:px-8 md:px-12 lg:px-16 xl:px-20">
 	<div class="mx-auto max-w-3xl">
 		<h1 class="mb-6 text-3xl font-bold">Arisan</h1>
+		<div class="mt-2 text-red-500">{errorMessage}</div>
+
 		{#if currentAccount}
 			<div class="space-y-6 rounded-lg bg-white p-6 shadow-md">
 				<div>
@@ -173,25 +270,42 @@
 					>
 						Add Member
 					</Button>
-					<div class="mt-2 text-red-500">{errorMessage}</div>
 				</div>
 				<div>
 					<h2 class="mb-2 text-xl font-semibold">Withdraw</h2>
 					<Button
 						class="rounded-md bg-green-500 px-4 py-2 font-medium text-white hover:bg-green-600"
 						id="withdrawButton"
+						on:click={withdraw}
 					>
 						Withdraw
 					</Button>
-					<div class="mt-2 text-red-500">{errorMessage}</div>
 				</div>
 				<div>
 					<h2 class="mb-2 text-xl font-semibold">Pick a Winner</h2>
 					<Button
 						class="rounded-md bg-yellow-500 px-4 py-2 font-medium text-white hover:bg-yellow-600"
 						id="pickWinnerButton"
+						on:click={pickWinner}
 					>
 						Pick a Winner
+					</Button>
+				</div>
+				<div>
+					<h2 class="mb-2 text-xl font-semibold">Contribute</h2>
+					<input
+						type="number"
+						class="mb-2 w-full rounded-md border px-4 py-2"
+						placeholder="Enter contribution amount (ETH)"
+						bind:value={contributionAmount}
+						id="contributionInput"
+					/>
+					<Button
+						class="rounded-md bg-purple-500 px-4 py-2 font-medium text-white hover:bg-purple-600"
+						id="contributeButton"
+						on:click={contribute}
+					>
+						Contribute
 					</Button>
 					<div class="mt-2 text-red-500">{errorMessage}</div>
 				</div>
