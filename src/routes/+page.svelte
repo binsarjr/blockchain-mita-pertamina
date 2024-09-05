@@ -192,14 +192,14 @@
 			const contributionAmountInWei = $web3.utils.toWei(contributionAmount.toString(), 'ether');
 
 			const gasEstimate = await arisanContract.methods
-				.contribute()
+				.contribute(contributionAmount)
 				.estimateGas({ from: currentAccount, value: contributionAmountInWei });
 			if (!gasEstimate) {
 				toast.error('Failed to estimate gas');
 				return;
 			}
 			const result = await arisanContract.methods
-				.contribute()
+				.contribute(contributionAmount)
 				.send({ from: currentAccount, gas: gasEstimate, value: contributionAmountInWei });
 			console.log('Contribute successfully:', result);
 			console.log('Contribute successfully:', result.transactionHash);
