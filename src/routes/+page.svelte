@@ -63,7 +63,7 @@
 			// Get winner address
 			const winnerAddress = await arisanContract.methods.winner().call();
 			$contractDetail.winner = !isNullAddress(winnerAddress)
-				? (winnerAddress || '')?.toLowerCase()()
+				? winnerAddress
 				: 'Arisan has not been won yet';
 
 			loadMember();
