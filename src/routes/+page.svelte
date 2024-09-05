@@ -27,6 +27,7 @@
 
 	function loadSmartContractAddress() {
 		arisanContract = new $web3.eth.Contract(ArisanAbi as any, $contractAddress);
+		errorMessage = '';
 		updateContractDetails();
 	}
 
