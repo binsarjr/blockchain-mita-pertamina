@@ -38,7 +38,7 @@
 
 	function isNullAddress(address: string) {
 		const nullAddress = '0x0000000000000000000000000000000000000000';
-		return address?.toLowerCase() == nullAddress?.toLowerCase();
+		return (address || '')?.toLowerCase() == (nullAddress || '')?.toLowerCase();
 	}
 	async function updateContractDetails() {
 		if (!$web3) return;
@@ -63,7 +63,7 @@
 			// Get winner address
 			const winnerAddress = await arisanContract.methods.winner().call();
 			$contractDetail.winner = !isNullAddress(winnerAddress)
-				? winnerAddress?.toLowerCase()()
+				? (winnerAddress || '')?.toLowerCase()()
 				: 'Arisan has not been won yet';
 
 			loadMember();
@@ -83,7 +83,7 @@
 	let memberAddress: string;
 
 	$: if (memberAddress) {
-		memberAddress = memberAddress?.toLowerCase();
+		memberAddress = (memberAddress || '')?.toLowerCase();
 	}
 
 	async function estimateGasForRegisterMember() {
