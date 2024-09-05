@@ -7,7 +7,7 @@ export const account = writable(null);
 
 // Fungsi untuk menghubungkan wallet
 export async function connectWallet() {
-	if (window.ethereum) {
+	if (typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
 		try {
 			// Minta pengguna untuk menghubungkan wallet mereka
 			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -34,6 +34,13 @@ export async function connectWallet() {
 			console.error('User rejected connection', error);
 		}
 	} else {
-		console.error('MetaMask not found. Please install MetaMask.');
+		// Deteksi jika menggunakan perangkat mobile
+		if (/Mobi|Android/i.test(navigator.userAgent)) {
+			alert(
+				'MetaMask tidak terdeteksi. Silakan instal MetaMask dari App Store atau Google Play Store.'
+			);
+		} else {
+			console.error('MetaMask tidak ditemukan. Silakan instal MetaMask.');
+		}
 	}
 }
