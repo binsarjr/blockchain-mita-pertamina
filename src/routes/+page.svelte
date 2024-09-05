@@ -9,7 +9,7 @@
 	let arisanContract: any;
 	const contractAddress = persisted(
 		'arisanSmartContractAddress',
-		'0x20c2c096582305183e5711Ca08ABF8F086aa2544'
+		'0xF1F1c8fd3c3C5afE508e94896aF1Ff1a1ad4fB94'
 	);
 
 	let errorMessage = '';
@@ -20,7 +20,7 @@
 	});
 
 	$: if (currentAccount) {
-		currentAccount = currentAccount.toLowerCase();
+		currentAccount = (currentAccount || '')?.toLowerCase();
 	}
 
 	const contractDetail = writable<any>({});
@@ -38,7 +38,7 @@
 
 	function isNullAddress(address: string) {
 		const nullAddress = '0x0000000000000000000000000000000000000000';
-		return address.toLowerCase() == nullAddress.toLowerCase();
+		return address?.toLowerCase() == nullAddress?.toLowerCase();
 	}
 	async function updateContractDetails() {
 		if (!$web3) return;
@@ -63,7 +63,7 @@
 			// Get winner address
 			const winnerAddress = await arisanContract.methods.winner().call();
 			$contractDetail.winner = !isNullAddress(winnerAddress)
-				? winnerAddress.toLowerCase()()
+				? winnerAddress?.toLowerCase()()
 				: 'Arisan has not been won yet';
 
 			loadMember();
@@ -83,7 +83,7 @@
 	let memberAddress: string;
 
 	$: if (memberAddress) {
-		memberAddress = memberAddress.toLowerCase();
+		memberAddress = memberAddress?.toLowerCase();
 	}
 
 	async function estimateGasForRegisterMember() {
